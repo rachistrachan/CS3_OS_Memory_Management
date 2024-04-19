@@ -1,5 +1,4 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.*;
 import java.util.*;
 
@@ -12,7 +11,8 @@ public class OS1Assignment {
         String filePath = scanner.nextLine();
         scanner.close();
         List<Long> virtualAddress = readVA(filePath);
-        System.out.println(virtualAddress);
+        List<Long> physicalAddress = convertToPhysical(virtualAddress);
+        System.out.println(physicalAddress);
 
     }
     private static List<Long> readVA(String filePath) {
@@ -33,11 +33,31 @@ public class OS1Assignment {
 
     // another arrayList containing physical addresses
     // method that takes in long virtual address and changes it to physical address
-    private static void convertToPhysical(ArrayList<Long> virualAddress) {
+    private static List<Long> convertToPhysical(List<Long> virtualAddress) {
+        List<Long> physicalAddresses = new ArrayList<>();
+        // page table mapping as given
         int[] pageTable = new int[]{2, 4, 1, 7, 3, 5, 6};
+        // loop through list of virtual addresses
+        for (int i = 0; i < virtualAddress.size(); i++ ) {
+            long vA = virtualAddress.get(i);
+            // extract last 7 bits of vA
+            int offset = (int) (vA & 0x7F);
+            // shift vA 7 bits to the right
+            // extract 5 bits = page number
+            int pageNumber = (int) ((vA >>> 7) & 0x1F);
+            // get frameNumber from pageTable using pageNumber as index
+            long frameNumber = pageTable[pageNumber];
+            // shift frame number by 7 bits so it is in higher part of address
+            long shiftFrame = frameNumber << 7;
+            // combine shifted frame number with offset = to create physical address
+            long pA = shiftFrame | offset;
+            physicalAddresses.add(pA);
+        }
+        return physicalAddresses;
+
+        }
 
 
 
 
-    }
 }
