@@ -12,7 +12,7 @@ public class OS1Assignment {
         scanner.close();
         List<Long> virtualAddress = readVA(filePath);
         List<Long> physicalAddress = convertToPhysical(virtualAddress);
-        System.out.println(physicalAddress);
+        writeToFile(physicalAddress);
 
     }
     private static List<Long> readVA(String filePath) {
@@ -56,6 +56,23 @@ public class OS1Assignment {
         return physicalAddresses;
 
         }
+    private static String toHexString(long address) {
+        return String.format("0x%03X", address);
+    }
+
+    private static void writeToFile(List<Long> physicalAddress) {
+        try (BufferedWriter w = new BufferedWriter(new FileWriter("output_OS1Assignment"))) {
+            for (int i = 0; i < physicalAddress.size(); i++){
+                long address = physicalAddress.get(i);
+                String hexString = toHexString(address);
+                w.write(hexString);
+                w.newLine();
+            }
+            System.out.println("Writing to 'output_OS1Assignment' complete.");
+        } catch (IOException e) {
+            System.out.println("Error writing to the file: output_OS1Assignment");
+        }
+    }
 
 
 
